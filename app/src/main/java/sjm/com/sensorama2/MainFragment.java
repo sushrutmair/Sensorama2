@@ -94,9 +94,13 @@ public class MainFragment extends Fragment {
                     //get and display orientation
                     if(as!=null) {
                         float[] vals = as.getCurrOrientation();
-                        String x = Float.toString(vals[0]) + " | " +
-                                Float.toString(vals[1]) + " | " + Float.toString(vals[2]);
-                        tv.setText(x);
+                        String z = Double.toString(Math.toDegrees(vals[0]));
+                        String x = Double.toString(Math.toDegrees(vals[1]));
+                        String y = Double.toString(Math.toDegrees(vals[2]));
+                        String all = "-Z (Azimuth): " + z + " \n " +
+                                "X (Pitch): " + x + " \n " +
+                                "Y (Roll): " + y;
+                        tv.setText(all);
                     }
                     else
                         tv.setText("error in retrieving custom sensor manager.");

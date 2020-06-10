@@ -12,8 +12,8 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="289dp"
-        android:layout_height="100dp"
+        android:layout_width="325dp"
+        android:layout_height="103dp"
         android:background="#FFFFFF"
         android:text="@string/hello_blank_fragment"
         app:layout_constraintBottom_toBottomOf="parent"
