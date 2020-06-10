@@ -35,4 +35,19 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.181" />
 
+    <TextView
+        android:id="@+id/tvPitch"
+        android:layout_width="302dp"
+        android:layout_height="45dp"
+        android:background="#A9ECF4"
+        android:fontFamily="sans-serif-black"
+        android:text="Pitch reading"
+        android:textAlignment="center"
+        android:textColor="#00897B"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

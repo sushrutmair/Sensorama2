@@ -1,6 +1,7 @@
 package sjm.com.sensorama2;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +28,10 @@ public class MainFragment extends Fragment {
     private String mParam2;
 
     private TextView tv;
+    private TextView tvPitch;
     private AndroidSensors as;
+    private CountDownTimer orTimer;
+    private boolean bTimerStarted = false;
 
     public MainFragment() {
         // Required empty public constructor
@@ -66,6 +70,7 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         tv = (TextView) v.findViewById(R.id.textView);
+        tvPitch = (TextView)v.findViewById(R.id.tvPitch);
 
         createLocalUIHandlers(v);
 
@@ -79,7 +84,10 @@ public class MainFragment extends Fragment {
         as.init(getContext());
     }
 
+    //@todo - check if this works
     public void stopSensing(){
+        if(bTimerStarted && orTimer!=null)
+            orTimer.cancel();
         if(as!=null){
             as.stop();
         }
@@ -93,7 +101,7 @@ public class MainFragment extends Fragment {
                 public void onClick(View view) {
                     //get and display orientation
                     if(as!=null) {
-                        float[] vals = as.getCurrOrientation();
+                        float[] vals = as.getCurrOrientation();//vals is in radians
                         String z = Double.toString(Math.toDegrees(vals[0]));
                         String x = Double.toString(Math.toDegrees(vals[1]));
                         String y = Double.toString(Math.toDegrees(vals[2]));
@@ -101,6 +109,7 @@ public class MainFragment extends Fragment {
                                 "X (Pitch): " + x + " \n " +
                                 "Y (Roll): " + y;
                         tv.setText(all);
+                        startTimer();
                     }
                     else
                         tv.setText("error in retrieving custom sensor manager.");
@@ -108,6 +117,27 @@ public class MainFragment extends Fragment {
             });
         }
 
+    }
+
+    private void startTimer(){
+        if(!bTimerStarted) {
+            orTimer = new CountDownTimer(60000, 150) {
+                @Override
+                public void onTick(long l) {
+                    float[] vals = as.getCurrOrientation();
+                    String pitch_x = Double.toString(Math.abs(Math.toDegrees(vals[1])));
+                    tvPitch.setText(pitch_x);
+                }
+
+                @Override
+                public void onFinish() {
+                    tvPitch.setText("time over. click button to restart for 1 min.");
+                    bTimerStarted = false;
+                }
+            };
+            orTimer.start();
+            bTimerStarted = true;
+        }
     }
 
     public interface OnFragmentMainMenuInteractionListener {
