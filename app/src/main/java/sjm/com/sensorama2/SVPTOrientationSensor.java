@@ -21,9 +21,20 @@ public class SVPTOrientationSensor extends Activity implements SensorEventListen
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
 
+    //for flail / jitter
+    private float accel;
+    private float accelCurrent;
+    private float accelLast;
+    float x; float y; float z;
+    private float weight = 9.8f;
+
     public void start(SensorManager sm){
         sensorMgr = sm;
         registerSensorListeners();
+
+        accel = 10f;
+        accelCurrent = SensorManager.GRAVITY_EARTH;
+        accelLast = SensorManager.GRAVITY_EARTH;
     }
 
     public void stop(SensorManager sm){
@@ -48,11 +59,28 @@ public class SVPTOrientationSensor extends Activity implements SensorEventListen
         return orientationAngles;
     }
 
+    public float getFlailFactor(){
+        accelLast = accelCurrent;
+        accelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
+        float delta = accelCurrent - accelLast;
+        accel = accel * 0.9f + delta;
+        return accel;
+    }
+
+    public float getForceInNewtons(){
+
+        return ( (weight/9.8f) * (accelCurrent));
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             System.arraycopy(event.values, 0, accelerometerReading,
                     0, accelerometerReading.length);
+            x = event.values[0];
+            y = event.values[1];
+            z = event.values[2];
+
         } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             System.arraycopy(event.values, 0, magnetometerReading,
                     0, magnetometerReading.length);

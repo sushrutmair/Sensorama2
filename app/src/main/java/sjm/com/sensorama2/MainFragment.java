@@ -1,5 +1,6 @@
 package sjm.com.sensorama2;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,8 @@ public class MainFragment extends Fragment {
 
     private TextView tv;
     private TextView tvPitch;
+    private TextView tvFlail;
+    private TextView tvForceN;
     private AndroidSensors as;
     private CountDownTimer orTimer;
     private boolean bTimerStarted = false;
@@ -71,6 +74,8 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         tv = (TextView) v.findViewById(R.id.textView);
         tvPitch = (TextView)v.findViewById(R.id.tvPitch);
+        tvFlail = (TextView)v.findViewById(R.id.tvFlail);
+        tvForceN= (TextView)v.findViewById(R.id.tvForce);
 
         createLocalUIHandlers(v);
 
@@ -82,6 +87,8 @@ public class MainFragment extends Fragment {
     private void createSensorHandlers() {
         as = new AndroidSensors();
         as.init(getContext());
+        tvFlail.setText("NONE");
+        tvForceN.setText("0 N");
     }
 
     //@todo - check if this works
@@ -101,14 +108,18 @@ public class MainFragment extends Fragment {
                 public void onClick(View view) {
                     //get and display orientation
                     if(as!=null) {
+
+                        //orientation angle
                         float[] vals = as.getCurrOrientation();//vals is in radians
                         String z = Double.toString(Math.toDegrees(vals[0]));
                         String x = Double.toString(Math.toDegrees(vals[1]));
                         String y = Double.toString(Math.toDegrees(vals[2]));
-                        String all = "-Z (Azimuth): " + z + " \n " +
+                        String all = "-Z (Azimuth/Yaw): " + z + " \n " +
                                 "X (Pitch): " + x + " \n " +
                                 "Y (Roll): " + y;
                         tv.setText(all);
+
+                        //check if timer to be started
                         startTimer();
                     }
                     else
@@ -124,15 +135,31 @@ public class MainFragment extends Fragment {
             orTimer = new CountDownTimer(60000, 150) {
                 @Override
                 public void onTick(long l) {
+                    tvFlail.setTextColor(Color.BLACK);
                     float[] vals = as.getCurrOrientation();
                     String pitch_x = Double.toString(Math.abs(Math.toDegrees(vals[1])));
                     tvPitch.setText(pitch_x);
+
+                    //flail detection
+                    float fflail = as.getFlailReading();
+                    tvFlail.setText("NONE: " + Float.toString(fflail));
+                    if(fflail > 3){
+                        //device is flailing
+                        tvFlail.setTextColor(Color.RED);
+                        tvFlail.setText("FLAIL: " + Float.toString(fflail));
+                    }
+
+                    //force
+                    tvForceN.setText(Float.toString(as.getForceReadingN()) + " N");
                 }
 
                 @Override
                 public void onFinish() {
-                    tvPitch.setText("time over. click button to restart for 1 min.");
+                    tvPitch.setText("time over. restart app.");
+                    tvFlail.setText("NONE");
+                    tvForceN.setText("0 N");
                     bTimerStarted = false;
+                    stopSensing();
                 }
             };
             orTimer.start();

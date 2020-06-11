@@ -63,6 +63,21 @@ public class AndroidSensors {
         return new float[0];
     }
 
+    public float getFlailReading(){
+        if(orSensor!=null) {
+            return (orSensor.getFlailFactor());
+        }
+
+        return 0f;
+    }
+
+    public float getForceReadingN(){
+        if(orSensor!=null) {
+            return (orSensor.getForceInNewtons());
+        }
+        return 0f;
+    }
+
     private void getSensorList() {
 
         /*if(sensorManager!=null){
