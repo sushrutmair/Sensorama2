@@ -1,0 +1,23 @@
+Pitch (around X axis)
+The angle between the positive Z axis and the positive Y axis of the device.
+
+When the device is placed face up on a table, the pitch value is 0. When the positive Z axis begins to tilt towards the positive Y axis, the pitch angle becomes positive. The value of Pitch ranges from -180 degrees to 180 degrees.
+
+Roll (around Y axis)
+The angle between the positive Z axis and the positive X axis of the device.
+
+When the device is placed face up on a table, the roll value is 0. When the positive Z axis begins to tilt towards the positive X axis, the roll angle becomes positive. The value of Roll ranges from -90 degrees to 90 degrees.
+
+Azimuth (around Z axis)
+The angle between positive Y axis of the device and magnetic north. The value of Azimuth ranges between 0–360 degrees.
+
+This table shows the value of Azimuth when the positive Y axis of the device is aligned to the magnetic north, south, east, and west.
+
+Direction of 			Azimuth (Degrees)
+Device Positive
+Y-Axis
+
+North					0
+South					180
+East					270
+West					360
