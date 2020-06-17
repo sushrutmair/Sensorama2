@@ -4,8 +4,6 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
-import java.util.List;
-
 /**
  * Manages the various sensors required for SVPT. Calls specific sensor classes as needed.
  */
