@@ -54,6 +54,11 @@ public class GraphFragment extends Fragment {
     int xLastFlail = 0;
     int maxPointsToStoreFlail = 4000;
 
+    LineGraphSeries<DataPoint> mLineSeriesForceN;
+    GraphView graphForceN;
+    int xLastForceN = 0;
+    int maxPointsToStoreForceN = 4000;
+
     public GraphFragment() {
         // Required empty public constructor
     }
@@ -123,19 +128,20 @@ public class GraphFragment extends Fragment {
                     String rom_angle = Double.toString(Math.abs(Math.toDegrees(vals[1])));
                     bdsROMAngleDataset.removeEntry(0);
                     bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
+                    hbcROMAngle.notifyDataSetChanged();
+                    hbcROMAngle.invalidate();
 
                     //flail
                     xLastFlail++;
                     mLineSeriesFlail.appendData(new DataPoint(xLastFlail,
-                                    Double.parseDouble(rom_angle)/*as.getFlailReading()*/),true,
+                                    as.getFlailReading()),true,
                             maxPointsToStoreFlail);
 
                     //force
-                    float forceN = as.getForceReadingN();
-
-                    //refresh all graphs
-                    hbcROMAngle.notifyDataSetChanged();
-                    hbcROMAngle.invalidate();
+                    xLastForceN++;
+                    mLineSeriesForceN.appendData(new DataPoint(xLastForceN,
+                                    as.getForceReadingN()),true,
+                            maxPointsToStoreForceN);
                 }
 
                 @Override
@@ -169,10 +175,30 @@ public class GraphFragment extends Fragment {
         }
     }
 
+    private void makeForceNGraphVViewportDynamic(boolean bMakeDyn) {
+
+        if(bMakeDyn){
+            graphForceN.getViewport().setScalable(true);
+            graphForceN.getViewport().setScrollable(true);
+            graphForceN.getViewport().setScalableY(true);
+            graphForceN.getViewport().setScrollableY(true);
+            graphForceN.getViewport().setXAxisBoundsManual(false);
+        }
+        else{
+            graphForceN.getViewport().setScalable(false);
+            graphForceN.getViewport().setScrollable(false);
+            graphForceN.getViewport().setScalableY(false);
+            graphForceN.getViewport().setScrollableY(false);
+            graphForceN.getViewport().setXAxisBoundsManual(true);
+            graphForceN.getViewport().setMaxX(100.0);
+        }
+    }
+
     private void CreateAllGraphs(View v){
 
         CreateROMAngleChart(v); //horz bar
         CreateFlailGraph(v);
+        CreateForceNGraph(v);
 
         Button btnStart = (Button)(v.findViewById(R.id.button));
         if(btnStart!=null){
@@ -181,6 +207,7 @@ public class GraphFragment extends Fragment {
                 public void onClick(View view) {
                     //start
                     makeFlailGraphVViewportDynamic(false);
+                    makeForceNGraphVViewportDynamic(false);
                     startTimer();
                 }
             });
@@ -192,6 +219,12 @@ public class GraphFragment extends Fragment {
         graphFlail =(GraphView)(v.findViewById(R.id.graphFlail));
         mLineSeriesFlail = new LineGraphSeries<>();
         graphFlail.addSeries(mLineSeriesFlail);
+    }
+
+    private void CreateForceNGraph(View v){
+        graphForceN =(GraphView)(v.findViewById(R.id.graphForceN));
+        mLineSeriesForceN = new LineGraphSeries<>();
+        graphForceN.addSeries(mLineSeriesForceN);
     }
 
     private void CreateROMAngleChart(View v){
