@@ -1,20 +1,27 @@
 package sjm.com.sensorama2;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +45,14 @@ public class GraphFragment extends Fragment {
     private HorizontalBarChart hbcROMAngle;
     private BarDataSet bdsROMAngleDataset;
 
-    private LineChart lcFlail;
-    private LineDataSet ldsFlailDataset;
+    private AndroidSensors as;
+    private CountDownTimer orTimer;
+    private boolean bTimerStarted = false;
 
-    private LineChart lcForceN;
-    private LineDataSet ldsForceNDataset;
-
+    LineGraphSeries<DataPoint> mLineSeriesFlail;
+    GraphView graphFlail;
+    int xLastFlail = 0;
+    int maxPointsToStoreFlail = 4000;
 
     public GraphFragment() {
         // Required empty public constructor
@@ -74,6 +83,8 @@ public class GraphFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
     }
 
     @Override
@@ -84,15 +95,103 @@ public class GraphFragment extends Fragment {
 
         CreateAllGraphs(v);
 
+        createSensorHandlers();
+
         return v;
+    }
+
+    private void createSensorHandlers() {
+        as = new AndroidSensors();
+        as.init(getContext());
+    }
+
+    public void stopSensing(){
+        if(bTimerStarted && orTimer!=null)
+            orTimer.cancel();
+
+        if(as!=null){
+            as.stop();
+        }
+    }
+
+    private void startTimer(){
+        if(!bTimerStarted) {
+            orTimer = new CountDownTimer((60*10*1000)/*10 min*/, 179) {
+                @Override
+                public void onTick(long l) {
+                    float[] vals = as.getCurrOrientation();
+                    String rom_angle = Double.toString(Math.abs(Math.toDegrees(vals[1])));
+                    bdsROMAngleDataset.removeEntry(0);
+                    bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
+
+                    //flail
+                    xLastFlail++;
+                    mLineSeriesFlail.appendData(new DataPoint(xLastFlail,
+                                    Double.parseDouble(rom_angle)/*as.getFlailReading()*/),true,
+                            maxPointsToStoreFlail);
+
+                    //force
+                    float forceN = as.getForceReadingN();
+
+                    //refresh all graphs
+                    hbcROMAngle.notifyDataSetChanged();
+                    hbcROMAngle.invalidate();
+                }
+
+                @Override
+                public void onFinish() {
+                    bTimerStarted = false;
+                    stopSensing();
+                }
+            };
+            orTimer.start();
+
+            bTimerStarted = true;
+        }
+    }
+
+    private void makeFlailGraphVViewportDynamic(boolean bMakeDyn) {
+
+        if(bMakeDyn){
+            graphFlail.getViewport().setScalable(true);
+            graphFlail.getViewport().setScrollable(true);
+            graphFlail.getViewport().setScalableY(true);
+            graphFlail.getViewport().setScrollableY(true);
+            graphFlail.getViewport().setXAxisBoundsManual(false);
+        }
+        else{
+            graphFlail.getViewport().setScalable(false);
+            graphFlail.getViewport().setScrollable(false);
+            graphFlail.getViewport().setScalableY(false);
+            graphFlail.getViewport().setScrollableY(false);
+            graphFlail.getViewport().setXAxisBoundsManual(true);
+            graphFlail.getViewport().setMaxX(100.0);
+        }
     }
 
     private void CreateAllGraphs(View v){
 
         CreateROMAngleChart(v); //horz bar
-        CreateFlailChart(v); //line
-        CreateForceNChart(v); //line
+        CreateFlailGraph(v);
 
+        Button btnStart = (Button)(v.findViewById(R.id.button));
+        if(btnStart!=null){
+            btnStart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //start
+                    makeFlailGraphVViewportDynamic(false);
+                    startTimer();
+                }
+            });
+        }
+
+    }
+
+    private void CreateFlailGraph(View v){
+        graphFlail =(GraphView)(v.findViewById(R.id.graphFlail));
+        mLineSeriesFlail = new LineGraphSeries<>();
+        graphFlail.addSeries(mLineSeriesFlail);
     }
 
     private void CreateROMAngleChart(View v){
@@ -100,22 +199,18 @@ public class GraphFragment extends Fragment {
         if(hbcROMAngle!=null){
 
             ArrayList<BarEntry> entries = new ArrayList<>();
-            entries.add(new BarEntry(10.0f, 0));
-            entries.add(new BarEntry(15.0f, 1));
-            entries.add(new BarEntry(25.0f, 2));
-            entries.add(new BarEntry(35.0f, 3));
+            float maxDegree = 100.0f;
+            entries.add(new BarEntry(maxDegree, 0));
 
             bdsROMAngleDataset = new BarDataSet(entries, "ROM");
 
             ArrayList<String> labels = new ArrayList<String>();
             labels.add("0");
-            labels.add("1");
-            labels.add("2");
-            labels.add("3");
-            labels.add("4");
+            labels.add("10");
 
             BarData bd = new BarData(labels, bdsROMAngleDataset);
             bdsROMAngleDataset.setColor(Color.rgb(0,119,204));
+            bdsROMAngleDataset.setValueTextSize(16f);
 
             hbcROMAngle.setData(bd);
             hbcROMAngle.setDescription("");//no description, hinders view
@@ -123,38 +218,5 @@ public class GraphFragment extends Fragment {
             hbcROMAngle.getXAxis().setDrawLabels(false);
 
         }
-    }
-
-    private void CreateFlailChart(View v){
-        lcFlail = (LineChart)(v.findViewById(R.id.FlailChart));
-        if(lcFlail!=null){
-            List<Entry> entries = new ArrayList<Entry>();
-            entries.add(new Entry(5.0f,0));
-            entries.add(new Entry(15.0f,1));
-            entries.add(new Entry(25.0f,2));
-            entries.add(new Entry(5.0f,3));
-            entries.add(new Entry(10.0f,4));
-
-            ldsFlailDataset = new LineDataSet(entries, "Flail");
-
-            ArrayList<String> labels = new ArrayList<String>();
-            labels.add("0");
-            labels.add("1");
-            labels.add("2");
-            labels.add("3");
-            labels.add("4");
-
-            LineData ld = new LineData(labels, ldsFlailDataset);
-            ldsFlailDataset.setColor(Color.rgb(0,100,151));
-
-            lcFlail.setData(ld);
-            lcFlail.setDescription("");//no description, hinders view
-            lcFlail.getLegend().setEnabled(false);
-            lcFlail.getXAxis().setDrawLabels(false);
-        }
-    }
-
-    private void CreateForceNChart(View v){
-
     }
 }

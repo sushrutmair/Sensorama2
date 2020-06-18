@@ -15,35 +15,43 @@
 
         <com.github.mikephil.charting.charts.HorizontalBarChart
             android:id="@+id/ROMAngleChart"
-            android:layout_width="490dp"
-            android:layout_height="236dp"
-            android:layout_marginTop="24dp"
+            android:layout_width="291dp"
+            android:layout_height="145dp"
+            android:layout_marginTop="4dp"
             android:background="#EDE7E7"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintHorizontal_bias="0.448"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/FlailChart"
-            android:layout_width="490dp"
-            android:layout_height="218dp"
-            android:layout_marginTop="24dp"
-            android:background="#EDE7E7"
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphFlail"
+            android:layout_width="290dp"
+            android:layout_height="153dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.505"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ROMAngleChart" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/ForceNChart"
-            android:layout_width="481dp"
-            android:layout_height="187dp"
-            android:layout_marginTop="28dp"
-            android:background="#EDE7E7"
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphForceN"
+            android:layout_width="290dp"
+            android:layout_height="153dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/FlailChart" />
+            app:layout_constraintTop_toBottomOf="@+id/graphFlail" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 

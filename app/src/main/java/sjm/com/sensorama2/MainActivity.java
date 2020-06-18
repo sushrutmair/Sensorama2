@@ -12,7 +12,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SpawnMMF();
+        //SpawnMMF();
+        SpawnGF();
     }
 
     private void SpawnMMF(){
@@ -22,11 +23,23 @@ public class MainActivity extends AppCompatActivity implements
         ft.commit();
     }
 
+    private void SpawnGF(){
+        GraphFragment gf = new GraphFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragMainMenuContainer, gf);
+        ft.commit();
+    }
+
     protected void onStop() {
         super.onStop();
-        MainFragment mf = new MainFragment();
+        /*MainFragment mf = new MainFragment();
         if (mf != null) {
             mf.stopSensing();
+        }*/
+
+        GraphFragment gf = new GraphFragment();
+        if (gf != null) {
+            gf.stopSensing();
         }
     }
 
