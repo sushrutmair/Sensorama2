@@ -11,38 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="-38dp">
-
-        <com.github.mikephil.charting.charts.HorizontalBarChart
-            android:id="@+id/ROMAngleChart"
-            android:layout_width="291dp"
-            android:layout_height="145dp"
-            android:layout_marginTop="4dp"
-            android:background="#EDE7E7"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.448"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphFlail"
-            android:layout_width="290dp"
-            android:layout_height="153dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.505"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ROMAngleChart" />
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphForceN"
-            android:layout_width="290dp"
-            android:layout_height="153dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/graphFlail" />
+        tools:layout_editor_absoluteY="64dp">
 
         <Button
             android:id="@+id/button"
@@ -52,6 +21,26 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <com.github.mikephil.charting.charts.HorizontalBarChart
+            android:id="@+id/ROMAngleChart"
+            android:layout_width="305dp"
+            android:layout_height="113dp"
+            android:layout_marginTop="48dp"
+            android:background="#EDE7E7"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.533"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphFlail"
+            android:layout_width="301dp"
+            android:layout_height="249dp"
+            app:layout_constraintBottom_toTopOf="@+id/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ROMAngleChart" />
 
     </android.support.constraint.ConstraintLayout>
 
