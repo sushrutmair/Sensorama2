@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -51,8 +52,10 @@ public class GraphFragment extends Fragment {
 
     LineGraphSeries<DataPoint> mLineSeriesFlail;
     GraphView graphFlail;
-    int xLastFlail = 0;
-    int maxPointsToStoreFlail = 4000;
+    private int xLastFlail = 0;
+    private int maxPointsToStoreFlail = 4000;
+
+    private TextView tvROMAngle;
 
     public GraphFragment() {
         // Required empty public constructor
@@ -97,6 +100,8 @@ public class GraphFragment extends Fragment {
 
         createSensorHandlers();
 
+        tvROMAngle = v.findViewById(R.id.textView2);
+
         return v;
     }
 
@@ -121,17 +126,15 @@ public class GraphFragment extends Fragment {
                 public void onTick(long l) {
                     float[] vals = as.getCurrOrientation();
                     float signed_rom_angle = (float) Math.toDegrees(vals[1]);
-                    float abs_rom_angle = (float) Math.abs(Math.toDegrees(vals[1]));
-                    String rom_angle = "0";
-
-                    if( (signed_rom_angle < 0.0)) {
-                        if ( 0.0 > abs_rom_angle && abs_rom_angle > -90.0 ) {
-                            float delta = (float) (90.0 - abs_rom_angle);
-                            rom_angle = Double.toString(90.0 + delta);
-                        }
+                    float final_rom_angle = 0f;
+                    tvROMAngle.setText(Float.toString(signed_rom_angle));
+                    if(signed_rom_angle<0f){
+                        final_rom_angle = (float) (90.0+Math.abs(signed_rom_angle));
                     }
                     else
-                        rom_angle = Double.toString(Math.abs(Math.toDegrees(vals[1])));
+                        final_rom_angle = (float) (90.0-signed_rom_angle);
+                    //String rom_angle = Double.toString(Math.abs(Math.toDegrees(vals[1])));
+                    String rom_angle = Double.toString(final_rom_angle);
 
                     bdsROMAngleDataset.removeEntry(0);
                     bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
@@ -208,7 +211,7 @@ public class GraphFragment extends Fragment {
         if(hbcROMAngle!=null){
 
             ArrayList<BarEntry> entries = new ArrayList<>();
-            float maxDegree = 100.0f;
+            float maxDegree = 185.0f;
             entries.add(new BarEntry(maxDegree, 0));
 
             bdsROMAngleDataset = new BarDataSet(entries, "ROM");

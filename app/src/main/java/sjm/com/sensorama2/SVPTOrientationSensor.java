@@ -93,9 +93,7 @@ public class SVPTOrientationSensor extends Activity implements SensorEventListen
                 accelerometerReading, magnetometerReading);
 
         // "RotationMatrix" now has up-to-date information.
-
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
-
         // "OrientationAngles" now has up-to-date information.
     }
 
