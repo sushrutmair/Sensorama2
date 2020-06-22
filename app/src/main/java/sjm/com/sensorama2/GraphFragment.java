@@ -55,8 +55,6 @@ public class GraphFragment extends Fragment {
     private int xLastFlail = 0;
     private int maxPointsToStoreFlail = 4000;
 
-    private TextView tvROMAngle;
-
     public GraphFragment() {
         // Required empty public constructor
     }
@@ -100,8 +98,6 @@ public class GraphFragment extends Fragment {
 
         createSensorHandlers();
 
-        tvROMAngle = v.findViewById(R.id.textView2);
-
         return v;
     }
 
@@ -127,7 +123,12 @@ public class GraphFragment extends Fragment {
                     float[] vals = as.getCurrOrientation();
                     float signed_rom_angle = (float) Math.toDegrees(vals[1]);
                     float final_rom_angle = 0f;
-                    tvROMAngle.setText(Float.toString(signed_rom_angle));
+
+                    /*
+                    Updated pitch angle visualization to reflect from 0 to 180 degrees.
+                    0 deg is parallel to the standing body and 180 is its other extreme range.
+                    90 deg is perpendicular to the standing body.
+                     */
                     if(signed_rom_angle<0f){
                         final_rom_angle = (float) (90.0+Math.abs(signed_rom_angle));
                     }
