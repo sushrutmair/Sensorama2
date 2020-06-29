@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
@@ -54,6 +57,12 @@ public class GraphFragment extends Fragment {
     GraphView graphFlail;
     private int xLastFlail = 0;
     private int maxPointsToStoreFlail = 4000;
+
+    private Switch swBodyOrientation;
+    private boolean bSleepingOrientation =false;
+    private ArrayList<Float> romangleHistSleepingOrient = new ArrayList<>(10);
+
+    private TextView txtvDebug;
 
     public GraphFragment() {
         // Required empty public constructor
@@ -117,28 +126,40 @@ public class GraphFragment extends Fragment {
 
     private void startTimer(){
         if(!bTimerStarted) {
-            orTimer = new CountDownTimer((60*10*1000)/*10 min*/, 179) {
+            orTimer = new CountDownTimer((60*15*1000)/*15 min*/, 179) {
                 @Override
                 public void onTick(long l) {
                     float[] vals = as.getCurrOrientation();
                     float signed_rom_angle = (float) Math.toDegrees(vals[1]);
                     float final_rom_angle = 0f;
+                    txtvDebug.setText(Double.toString(signed_rom_angle));
 
-                    /*
-                    Updated pitch angle visualization to reflect from 0 to 180 degrees.
-                    0 deg is parallel to the standing body and 180 is its other extreme range.
-                    90 deg is perpendicular to the standing body.
-                     */
-                    if(signed_rom_angle<0f){
-                        final_rom_angle = (float) (90.0+Math.abs(signed_rom_angle));
+                    if(!bSleepingOrientation){ //standing
+                        /*
+                        Updated pitch angle visualization to reflect from 0 to 180 degrees.
+                        0 deg is parallel to the standing body and 180 is its other extreme range.
+                        90 deg is perpendicular to the standing body.
+                         */
+                        if(signed_rom_angle<0f){
+                            final_rom_angle = (float) (90.0+Math.abs(signed_rom_angle));
+                        }
+                        else
+                            final_rom_angle = (float) (90.0-signed_rom_angle);
+                        //String rom_angle = Double.toString(Math.abs(Math.toDegrees(vals[1])));
+                        String rom_angle = Double.toString(final_rom_angle);
+
+                        bdsROMAngleDataset.removeEntry(0);
+                        bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
                     }
-                    else
-                        final_rom_angle = (float) (90.0-signed_rom_angle);
-                    //String rom_angle = Double.toString(Math.abs(Math.toDegrees(vals[1])));
-                    String rom_angle = Double.toString(final_rom_angle);
+                    else { //sleeping orientation
+                        final_rom_angle = (float) (Math.abs(signed_rom_angle));
 
-                    bdsROMAngleDataset.removeEntry(0);
-                    bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
+                        String rom_angle = Double.toString(final_rom_angle);
+
+                        bdsROMAngleDataset.removeEntry(0);
+                        bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
+                    }
+
                     hbcROMAngle.notifyDataSetChanged();
                     hbcROMAngle.invalidate();
 
@@ -178,8 +199,8 @@ public class GraphFragment extends Fragment {
             graphFlail.getViewport().setXAxisBoundsManual(true);
             graphFlail.getViewport().setMaxX(100.0);
             graphFlail.getViewport().setYAxisBoundsManual(true);
-            graphFlail.getViewport().setMinY(-40.0);
-            graphFlail.getViewport().setMaxY(40.0);
+            graphFlail.getViewport().setMinY(-20.0);
+            graphFlail.getViewport().setMaxY(20.0);
         }
     }
 
@@ -195,6 +216,26 @@ public class GraphFragment extends Fragment {
                     //start
                     makeFlailGraphVViewportDynamic(false);
                     startTimer();
+                }
+            });
+        }
+
+        txtvDebug = (TextView) (v.findViewById(R.id.tvDebug));
+        txtvDebug.setText("None");
+
+        swBodyOrientation = (Switch)(v.findViewById(R.id.swBodyOrientation));
+        if(swBodyOrientation!=null){
+            swBodyOrientation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if(b) {
+                        bSleepingOrientation = false; //standing (default)
+                        swBodyOrientation.setText("Standing");
+                    }
+                    else {
+                        bSleepingOrientation = true;//sleeping
+                        swBodyOrientation.setText("Sleeping");
+                    }
                 }
             });
         }
