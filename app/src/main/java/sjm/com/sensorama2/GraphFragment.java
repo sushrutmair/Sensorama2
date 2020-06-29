@@ -131,8 +131,10 @@ public class GraphFragment extends Fragment {
                     float[] vals = as.getCurrOrientation();
                     float signed_rom_angle = (float) Math.toDegrees(vals[1]);
                     float final_rom_angle = 0f;
+                    float zSigned = as.getZ();
 
-                    txtvDebug.setText(Double.toString(signed_rom_angle));
+                    //If z is positive: device is face up. If z is negative, it is face down.
+                    txtvDebug.setText(Double.toString(signed_rom_angle) + " z: " + Float.toString(zSigned));
                     //txtvDebug.setText(Integer.toString(iCross));
 
                     if(!bSleepingOrientation){ //standing
@@ -154,7 +156,14 @@ public class GraphFragment extends Fragment {
                     }
                     else { //sleeping orientation
 
-                        final_rom_angle = (float) (Math.abs(signed_rom_angle));
+                        if(zSigned>0){
+                            //device is face up. normal euler angles apply. See https://stackoverflow.com/a/27679680
+                            final_rom_angle = (float) (Math.abs(signed_rom_angle));
+                        }
+                        else {
+                            //device is face down (or going face down). Adjust the euler angles.
+                            final_rom_angle = (float) (90.0 + (90.0 - (Math.abs(signed_rom_angle))));
+                        }
 
                         String rom_angle = Double.toString(final_rom_angle);
 

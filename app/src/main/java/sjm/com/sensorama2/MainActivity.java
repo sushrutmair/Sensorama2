@@ -3,6 +3,7 @@ package sjm.com.sensorama2;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity implements
         MainFragment.OnFragmentMainMenuInteractionListener {
@@ -14,6 +15,8 @@ public class MainActivity extends AppCompatActivity implements
 
         //SpawnMMF();
         SpawnGF();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void SpawnMMF(){
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements
         if (gf != null) {
             gf.stopSensing();
         }
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override

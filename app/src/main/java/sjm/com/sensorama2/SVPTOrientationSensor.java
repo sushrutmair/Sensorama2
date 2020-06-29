@@ -59,6 +59,10 @@ public class SVPTOrientationSensor extends Activity implements SensorEventListen
         return orientationAngles;
     }
 
+    public float getZ(){
+        return z;
+    }
+
     public float getFlailFactor(){
         accelLast = accelCurrent;
         accelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));

@@ -69,6 +69,13 @@ public class AndroidSensors {
         return 0f;
     }
 
+    public float getZ(){
+        if(orSensor!=null){
+            return orSensor.getZ();
+        }
+        return 0;
+    }
+
     public float getForceReadingN(){
         if(orSensor!=null) {
             return (orSensor.getForceInNewtons());
