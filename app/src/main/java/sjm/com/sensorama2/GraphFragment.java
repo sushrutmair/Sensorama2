@@ -60,7 +60,6 @@ public class GraphFragment extends Fragment {
 
     private Switch swBodyOrientation;
     private boolean bSleepingOrientation =false;
-    private ArrayList<Float> romangleHistSleepingOrient = new ArrayList<>(10);
 
     private TextView txtvDebug;
 
@@ -126,13 +125,15 @@ public class GraphFragment extends Fragment {
 
     private void startTimer(){
         if(!bTimerStarted) {
-            orTimer = new CountDownTimer((60*15*1000)/*15 min*/, 179) {
+            orTimer = new CountDownTimer((60*15*1000)/*15 min in ms*/, 179/*in ms*/) {
                 @Override
-                public void onTick(long l) {
+                public void onTick(long l) { //gets invoked every countDownInterval ms
                     float[] vals = as.getCurrOrientation();
                     float signed_rom_angle = (float) Math.toDegrees(vals[1]);
                     float final_rom_angle = 0f;
+
                     txtvDebug.setText(Double.toString(signed_rom_angle));
+                    //txtvDebug.setText(Integer.toString(iCross));
 
                     if(!bSleepingOrientation){ //standing
                         /*
@@ -152,6 +153,7 @@ public class GraphFragment extends Fragment {
                         bdsROMAngleDataset.addEntry(new BarEntry(Float.parseFloat(rom_angle),0));
                     }
                     else { //sleeping orientation
+
                         final_rom_angle = (float) (Math.abs(signed_rom_angle));
 
                         String rom_angle = Double.toString(final_rom_angle);
