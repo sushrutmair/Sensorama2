@@ -118,7 +118,7 @@ public class SVPTOrientationSensor extends Activity implements SensorEventListen
 
         orientationAngles[1] = (float) -Math.atan(gy / Math.sqrt(gx * gx + gz * gz));
         orientationAngles[0] = 0;
-        orientationAngles[2] = (float) -Math.atan(gx / Math.sqrt(gy * gy + gz * gz)); // Impossible to guess
+        orientationAngles[2] = (float) -Math.atan(gx / Math.sqrt(gy * gy + gz * gz));
 
         rotationMatrix = getRotationMatrixFromOrientation(orientationAngles);
     }

@@ -104,11 +104,6 @@ public class AndroidSensors {
 
             if(magneticField == null)
                 bMagSensorMissing = true;
-            //@todo - be able to calculate pitch angle even without magnetometer
-            //see - https://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
-            //https://stackoverflow.com/questions/38711705/android-device-orientation-without-geomagnetic
-            //https://stackoverflow.com/questions/39975877/how-to-detect-magnetic-north-azimuth-without-magnetometer
-
 
             if( accelerometer != null)
                 bRet = true;
